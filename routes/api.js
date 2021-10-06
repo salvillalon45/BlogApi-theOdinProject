@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-// const auth_controller = require('../controllers/authController');
+const auth_controller = require('../controllers/authController');
 
 router.get('/', function (req, res, next) {
 	res.status(200).json('You reached the blog api');
@@ -9,7 +9,7 @@ router.get('/', function (req, res, next) {
 // SIGNUP
 // ------------------------------------------------------------
 // router.get('/sign-up', auth_controller.sign_up_get);
-// router.post('/sign-up', auth_controller.sign_up_post);
+router.post('/sign-up', auth_controller.sign_up_post);
 
 // LOGIN/LOGOUT
 // ------------------------------------------------------------
