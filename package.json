@@ -8,7 +8,7 @@
 	"scripts": {
 		"start": "node ./bin/www",
 		"devstart": "nodemon ./bin/www",
-		"debug": "nodemon --inspect index.js ",
+		"debug": "nodemon --inspect ./bin/www",
 		"serverstart": "SET DEBUG=theodinproject-blogapi:* & npm run devstart",
 		"debugstart": "SET DEBUG=theodinproject-blogapi:* & npm run debug"
 	},

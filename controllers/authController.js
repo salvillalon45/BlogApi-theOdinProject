@@ -14,24 +14,21 @@ exports.sign_up_post = [
 		.isLength({ min: 1 })
 		.escape()
 		.withMessage('Password must be at least 1 character'),
-
 	async function (req, res, next) {
 		try {
 			const errors = validationResult(req);
-			console.log(errors);
+
 			if (!errors.isEmpty()) {
-				console.log('THER ARE ERRORS');
-				const errorsFilter = errors.filter(function (e) {
-					console.log(e);
-					return e.msg;
+				const validationErrors = [];
+				errors.array().forEach((e) => {
+					validationErrors.push(e.msg);
 				});
-				console.log('What is errorsFilter');
-				console.log(errorsFilter);
 				throw {
 					message: 'SIGN UP: Error with fields',
-					context: errorsFilter
+					context: validationErrors
 				};
 			}
+
 			const { username, password } = req.body;
 
 			if (await checkUserExists(username)) {
@@ -64,3 +61,11 @@ exports.sign_up_post = [
 		}
 	}
 ];
+
+exports.log_in_post = function (req, res, next) {
+	try {
+		const { username, password } = req.body;
+
+		const foundUser = await User.findOne({ username });
+	} catch (err) {}
+};
