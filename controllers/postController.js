@@ -3,7 +3,7 @@ const utils = require('../libs/utils');
 const { body, validationResult } = require('express-validator');
 const { genPassword, issueJWT, checkUserExists, checkValidPassword } = utils;
 
-exports.posts_get = async function (req, res, next) {
+exports.get_posts = async function (req, res, next) {
 	try {
 		const posts = await Post.find().populate('author');
 

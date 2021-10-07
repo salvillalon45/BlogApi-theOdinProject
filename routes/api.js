@@ -30,11 +30,11 @@ router.get('/log-out', auth_controller.log_out_get);
 
 // POSTS
 // ------------------------------------------------------------
-router.get('/posts', post_controller.posts_get);
+router.get('/posts', post_controller.get_posts);
 router.get('/posts/:postid', post_controller.post_detail);
 
 // COMMENTS
 // ------------------------------------------------------------
-router.get('/posts/:postid/comments', comment_controller.comment_get);
+router.get('/posts/:postid/comments', comment_controller.get_comments);
 
 module.exports = router;
