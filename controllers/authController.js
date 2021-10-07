@@ -1,7 +1,7 @@
 const User = require('../models/user');
 const utils = require('../libs/utils');
 const { body, validationResult } = require('express-validator');
-const { genPassword, issueJWT, checkUserExists } = utils;
+const { genPassword, issueJWT, checkUserExists, checkValidPassword } = utils;
 
 exports.sign_up_post = [
 	body('username')
@@ -62,10 +62,45 @@ exports.sign_up_post = [
 	}
 ];
 
-exports.log_in_post = function (req, res, next) {
+exports.log_in_post = async function (req, res, next) {
 	try {
 		const { username, password } = req.body;
 
 		const foundUser = await User.findOne({ username });
-	} catch (err) {}
+
+		if (!foundUser) {
+			throw {
+				message: 'LOG IN: Error while trying to log in user',
+				context: 'Cannot find user'
+			};
+		}
+
+		if (checkValidPassword(foundUser.password, password)) {
+			const { token, expiresIn } = issueJWT(foundUser);
+
+			res.status(200).json({
+				token: token,
+				expiresIn: expiresIn,
+				user: foundUser
+			});
+		} else {
+			throw {
+				message: 'LOG IN: Error while trying to log in user',
+				context: 'Entered wrong password'
+			};
+		}
+	} catch (err) {
+		res.status(500).json({
+			message: 'LOG IN: Error while trying to log in user',
+			error: err
+		});
+	}
+};
+
+exports.log_out_get = function (req, res, next) {
+	console.log('Made it logout');
+	req.logout();
+	res.status(200).json({
+		message: 'LOG OUT'
+	});
 };

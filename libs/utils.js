@@ -3,6 +3,12 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 require('dotenv').config();
 
+async function checkValidPassword(foundUserPassword, inputPassword) {
+	const match = await bcrypt.compare(inputPassword, foundUserPassword);
+
+	return match ? true : false;
+}
+
 async function checkUserExists(username) {
 	try {
 		const isUserInDB = await User.find({ username });
@@ -53,5 +59,6 @@ function issueJWT(user) {
 module.exports = {
 	issueJWT,
 	genPassword,
-	checkUserExists
+	checkUserExists,
+	checkValidPassword
 };
