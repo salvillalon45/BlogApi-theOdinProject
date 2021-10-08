@@ -1,7 +1,43 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+const { validationResult } = require('express-validator');
+const ObjectId = require('mongoose').Types.ObjectId;
 require('dotenv').config();
+
+function isObjectIdValid(id) {
+	return ObjectId.isValid(id)
+		? String(new ObjectId(id) === id)
+			? true
+			: false
+		: false;
+}
+
+function checkIdExists(req, res, id, message, key) {
+	if (isObjectIdValid(id) === false) {
+		console.log('wrong id');
+		res.status(200).json({
+			message,
+			[key]: null
+		});
+	} else {
+		console.log('good id');
+	}
+}
+
+function checkValidationErrors(req, res, message) {
+	const errors = validationResult(req);
+
+	if (!errors.isEmpty()) {
+		const validationErrors = errors.array().map((e) => {
+			return e.msg;
+		});
+		res.status(200).json({
+			message,
+			context: validationErrors
+		});
+	}
+}
 
 async function checkValidPassword(foundUserPassword, inputPassword) {
 	const match = await bcrypt.compare(inputPassword, foundUserPassword);
@@ -58,7 +94,10 @@ function issueJWT(user) {
 
 module.exports = {
 	issueJWT,
+	isObjectIdValid,
 	genPassword,
+	checkValidationErrors,
 	checkUserExists,
+	checkIdExists,
 	checkValidPassword
 };

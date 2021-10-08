@@ -16,18 +16,7 @@ exports.sign_up_post = [
 		.withMessage('Password must be at least 1 character'),
 	async function (req, res, next) {
 		try {
-			const errors = validationResult(req);
-
-			if (!errors.isEmpty()) {
-				const validationErrors = [];
-				errors.array().forEach((e) => {
-					validationErrors.push(e.msg);
-				});
-				throw {
-					message: 'SIGN UP: Error with fields',
-					context: validationErrors
-				};
-			}
+			checkValidationErrors(req, res, 'SIGN UP: Error with fields');
 
 			const { username, password } = req.body;
 

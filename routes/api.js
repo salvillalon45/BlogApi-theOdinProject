@@ -32,9 +32,16 @@ router.get('/log-out', auth_controller.log_out_get);
 // ------------------------------------------------------------
 router.get('/posts', post_controller.get_posts);
 router.get('/posts/:postid', post_controller.post_detail);
+router.post('/posts', post_controller.create_post);
+router.delete('/posts/:postid', post_controller.delete_post);
 
 // COMMENTS
 // ------------------------------------------------------------
 router.get('/posts/:postid/comments', comment_controller.get_comments);
+router.post('/posts/:postid/comments', comment_controller.create_comment);
+router.delete(
+	'/posts/:postid/comments/:commentid',
+	comment_controller.delete_comment
+);
 
 module.exports = router;

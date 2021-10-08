@@ -31,7 +31,7 @@ app.use(helmet());
 app.use(favicon(path.join(__dirname, 'public', 'images', 'eren.jpg')));
 
 // Set up mongoose connection
-const mongoDB = process.env.MONGODB_URI || process.env.DEV_MONGODB_URI;
+const mongoDB = process.env.DEV_MONGODB_URI || process.env.MONGODB_URI;
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
