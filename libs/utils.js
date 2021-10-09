@@ -14,6 +14,7 @@ function isObjectIdValid(id) {
 }
 
 function checkIdExists(req, res, id, message, key) {
+	console.log('Inside checkIdexists');
 	if (isObjectIdValid(id) === false) {
 		console.log('wrong id');
 		res.status(200).json({

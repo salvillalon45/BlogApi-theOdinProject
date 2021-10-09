@@ -1,13 +1,13 @@
 const Post = require('../models/post');
 const utils = require('../libs/utils');
 const { body } = require('express-validator');
-const { checkValidationErrors, isObjectIdValid, checkIdExists } = utils;
+const { checkValidationErrors, checkIdExists } = utils;
 
 exports.get_posts = async function (req, res, next) {
 	try {
 		const posts = await Post.find().populate('author');
 
-		if (posts === null) {
+		if (posts === null || posts.length === 0) {
 			res.status(200).json({
 				message: 'GET POSTS: No posts available for this post',
 				posts
@@ -29,6 +29,15 @@ exports.get_posts = async function (req, res, next) {
 exports.post_detail = async function (req, res, next) {
 	try {
 		const { postid } = req.params;
+
+		checkIdExists(
+			req,
+			res,
+			postid,
+			'GET POST DETAIL: Post id not found',
+			'post'
+		);
+
 		const post = await Post.findById(postid).populate('author');
 
 		if (post === null) {
@@ -98,7 +107,6 @@ exports.delete_post = async function (req, res, next) {
 	try {
 		const { postid } = req.params;
 
-		console.log({ postid });
 		checkIdExists(
 			req,
 			res,

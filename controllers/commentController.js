@@ -1,16 +1,25 @@
 const Comment = require('../models/comment');
 const utils = require('../libs/utils');
 const { body } = require('express-validator');
-const { checkValidationErrors } = utils;
+const { checkValidationErrors, checkIdExists } = utils;
 
 exports.get_comments = async function (req, res, next) {
 	try {
 		const { postid } = req.params;
-		console.log(req.params);
+
+		checkIdExists(
+			req,
+			res,
+			postid,
+			'GET COMMENTS: Post id not found',
+			'comments'
+		);
+
 		const comments = await Comment.find({ post_ref: postid }).populate(
 			'user_ref post_ref'
 		);
-		if (comments === null) {
+
+		if (comments === null || comments.length === 0) {
 			res.status(200).json({
 				message: 'GET COMMENTS: No comments available for this post',
 				comments
@@ -47,10 +56,29 @@ exports.create_comment = [
 		.escape()
 		.withMessage('Post ref cannot be empty'),
 	async function (req, res, next) {
-		checkValidationErrors(req, res, 'CREATE COMMENT: Error with fields');
-
 		try {
 			const { content, user_ref, post_ref } = req.body;
+
+			checkValidationErrors(
+				req,
+				res,
+				'CREATE COMMENT: Error with fields'
+			);
+			checkIdExists(
+				req,
+				res,
+				user_ref,
+				'CREATE COMMENTS: User id not found',
+				'comment'
+			);
+			checkIdExists(
+				req,
+				res,
+				post_ref,
+				'CREATE COMMENTS: Post id not found',
+				'comment'
+			);
+
 			const newComment = new Comment({
 				timestamp: new Date(),
 				content,
@@ -77,9 +105,17 @@ exports.create_comment = [
 exports.delete_comment = async function (req, res, next) {
 	try {
 		const { commentid } = req.params;
+
+		checkIdExists(
+			req,
+			res,
+			commentid,
+			'DELETE COMMENT: Comment id not found',
+			'comment'
+		);
+
 		const deletedComment = await Comment.findByIdAndRemove(commentid);
-		console.log('What is deleteCOmment');
-		console.log(deletedComment);
+
 		if (deletedComment === null) {
 			res.status(200).json({
 				message: 'DELETE COMMENT: Comment id not found',
