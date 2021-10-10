@@ -1,7 +1,8 @@
 const Comment = require('../models/comment');
+const Post = require('../models/post');
 const utils = require('../libs/utils');
 const { body } = require('express-validator');
-const { checkValidationErrors, checkIdExists } = utils;
+const { checkValidationErrors, checkIdExists, checkDBOperationResult } = utils;
 
 exports.get_comments = async function (req, res, next) {
 	try {
@@ -50,14 +51,10 @@ exports.create_comment = [
 		.trim()
 		.escape()
 		.withMessage('User ref cannot be empty'),
-	body('post_ref')
-		.isLength({ min: 1 })
-		.trim()
-		.escape()
-		.withMessage('Post ref cannot be empty'),
 	async function (req, res, next) {
 		try {
-			const { content, user_ref, post_ref } = req.body;
+			const { content, user_ref } = req.body;
+			const { postid } = req.params;
 
 			checkValidationErrors(
 				req,
@@ -74,16 +71,25 @@ exports.create_comment = [
 			checkIdExists(
 				req,
 				res,
-				post_ref,
+				postid,
 				'CREATE COMMENTS: Post id not found',
 				'comment'
 			);
+
+			const postResult = await Post.findById(postid);
+
+			if (postResult === null) {
+				res.status(401).json({
+					message: 'CREATE COMMENT: Post id not found',
+					post: postResult
+				});
+			}
 
 			const newComment = new Comment({
 				timestamp: new Date(),
 				content,
 				user_ref,
-				post_ref
+				postid
 			});
 
 			await newComment.save();
@@ -134,3 +140,78 @@ exports.delete_comment = async function (req, res, next) {
 		});
 	}
 };
+
+exports.update_comment = [
+	body('content')
+		.isLength({ min: 1 })
+		.trim()
+		.escape()
+		.withMessage('Comment content cannot be empty'),
+	body('user_ref')
+		.isLength({ min: 1 })
+		.trim()
+		.escape()
+		.withMessage('User ref cannot be empty'),
+	async function (req, res, next) {
+		try {
+			const { content, user_ref } = req.body;
+			const { postid, commentid } = req.params;
+			console.log({ postid, commentid });
+			checkValidationErrors(
+				req,
+				res,
+				'UPDATE COMMENT: Error with fields'
+			);
+			checkIdExists(
+				req,
+				res,
+				user_ref,
+				'UPDATE COMMENTS: User id not found',
+				'comment'
+			);
+			checkIdExists(
+				req,
+				res,
+				postid,
+				'UPDATE COMMENTS: Post id not found',
+				'comment'
+			);
+
+			const updatedComment = new Comment({
+				timestamp: new Date(),
+				content,
+				user_ref,
+				postid,
+				_id: commentid
+			});
+
+			const postResult = await Post.findById(postid);
+
+			if (postResult === null) {
+				res.status(401).json({
+					message: 'UPDATE COMMENT: Post id not found',
+					post: postResult
+				});
+			}
+
+			const commentResult = await Comment.findByIdAndUpdate(
+				commentid,
+				updatedComment
+			);
+
+			checkDBOperationResult(
+				res,
+				commentResult,
+				'UPDATE COMMENT: Comment updated successfully',
+				'UPDATE COMMENT: Could not find comment to udpate',
+				'comment'
+			);
+		} catch (err) {
+			res.status(500).json({
+				message:
+					'UPDATE COMMENT: Error while trying to update a comment',
+				error: err.message
+			});
+		}
+	}
+];

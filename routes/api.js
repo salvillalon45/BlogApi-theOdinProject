@@ -34,6 +34,7 @@ router.get('/posts', post_controller.get_posts);
 router.get('/posts/:postid', post_controller.post_detail);
 router.post('/posts', post_controller.create_post);
 router.delete('/posts/:postid', post_controller.delete_post);
+router.put('/posts/:postid', post_controller.update_post);
 
 // COMMENTS
 // ------------------------------------------------------------
@@ -42,6 +43,10 @@ router.post('/posts/:postid/comments', comment_controller.create_comment);
 router.delete(
 	'/posts/:postid/comments/:commentid',
 	comment_controller.delete_comment
+);
+router.put(
+	'/posts/:postid/comments/:commentid',
+	comment_controller.update_comment
 );
 
 module.exports = router;

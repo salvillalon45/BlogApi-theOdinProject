@@ -13,7 +13,27 @@ function isObjectIdValid(id) {
 		: false;
 }
 
-function checkIdExists(req, res, id, message, key) {
+function checkDBOperationResult(
+	res,
+	dbResult,
+	successMessage,
+	errorMessage,
+	key
+) {
+	if (dbResult === null || dbResult.length === 0) {
+		res.status(401).json({
+			message: errorMessage,
+			[key]: dbResult
+		});
+	} else {
+		res.status(200).json({
+			message: successMessage,
+			[key]: dbResult
+		});
+	}
+}
+
+function checkIdExists(res, id, message, key) {
 	console.log('Inside checkIdexists');
 	if (isObjectIdValid(id) === false) {
 		console.log('wrong id');
@@ -100,5 +120,6 @@ module.exports = {
 	checkValidationErrors,
 	checkUserExists,
 	checkIdExists,
-	checkValidPassword
+	checkValidPassword,
+	checkDBOperationResult
 };
