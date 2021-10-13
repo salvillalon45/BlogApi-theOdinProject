@@ -8,6 +8,7 @@ const compression = require('compression');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
 const favicon = require('serve-favicon');
+const cors = require('cors');
 
 // Use dotenv files
 require('dotenv').config();
@@ -21,6 +22,9 @@ const apiRouter = require('./routes/api');
 
 const app = express();
 
+// Allow all clients (Will change later)
+app.use(cors());
+
 // Use Compression
 app.use(compression()); //Compress all routes
 
@@ -31,7 +35,8 @@ app.use(helmet());
 app.use(favicon(path.join(__dirname, 'public', 'images', 'eren.jpg')));
 
 // Set up mongoose connection
-const mongoDB = process.env.DEV_MONGODB_URI || process.env.MONGODB_URI;
+// const mongoDB = process.env.DEV_MONGODB_URI || process.env.MONGODB_URI;
+const mongoDB = process.env.DEV_MONGODB_URI;
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));

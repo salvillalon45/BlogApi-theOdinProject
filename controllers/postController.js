@@ -36,9 +36,8 @@ exports.get_posts = async function (req, res, next) {
 exports.post_detail = async function (req, res, next) {
 	try {
 		const { postid } = req.params;
-
+		console.log({ postid });
 		checkIdExists(
-			req,
 			res,
 			postid,
 			'GET POST DETAIL: Post id not found',
@@ -46,7 +45,8 @@ exports.post_detail = async function (req, res, next) {
 		);
 
 		const post = await Post.findById(postid).populate('author');
-
+		console.log('What is post');
+		console.log(post);
 		checkDBOperationResult(
 			res,
 			post,
@@ -66,6 +66,8 @@ exports.post_detail = async function (req, res, next) {
 		// 	});
 		// }
 	} catch (err) {
+		console.log('Erro here');
+		console.log(err);
 		res.status(500).json({
 			message:
 				'GET POST DETAIL: Error while trying to retrieve post by id',
