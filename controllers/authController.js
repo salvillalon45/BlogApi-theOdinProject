@@ -1,7 +1,13 @@
 const User = require('../models/user');
 const utils = require('../libs/utils');
 const { body, validationResult } = require('express-validator');
-const { genPassword, issueJWT, checkUserExists, checkValidPassword } = utils;
+const {
+	genPassword,
+	issueJWT,
+	checkUserExists,
+	checkValidPassword,
+	checkValidationErrors
+} = utils;
 
 exports.sign_up_post = [
 	body('username')
@@ -21,11 +27,11 @@ exports.sign_up_post = [
 			const { username, password } = req.body;
 
 			if (await checkUserExists(username)) {
-				throw {
-					message:
-						'CHECK USER EXISTS: Error when checking for users exists',
-					context: 'User already exists'
-				};
+				console.log('user exists');
+				res.status(401).json({
+					message: 'SIGN UP: Error when checking for users exists',
+					errors: ['User already exists']
+				});
 			}
 
 			const hashPassword = await genPassword(password);
@@ -36,16 +42,15 @@ exports.sign_up_post = [
 			});
 
 			const newUserResult = await newUser.save();
-			const { token, expiresIn } = issueJWT(newUserResult);
+			console.log('user does not exists');
 			res.status(200).json({
-				user: newUserResult,
-				token: token,
-				expiresIn: expiresIn
+				user: newUserResult
 			});
 		} catch (err) {
+			console.log(err);
 			res.status(500).json({
 				message: 'SIGN UP: Error while trying to save new user in db',
-				error: err
+				errors: [err.message]
 			});
 		}
 	}
@@ -60,7 +65,7 @@ exports.log_in_post = async function (req, res, next) {
 		if (!foundUser) {
 			throw {
 				message: 'LOG IN: Error while trying to log in user',
-				context: 'Cannot find user'
+				errors: ['Cannot find user']
 			};
 		}
 
@@ -75,13 +80,13 @@ exports.log_in_post = async function (req, res, next) {
 		} else {
 			throw {
 				message: 'LOG IN: Error while trying to log in user',
-				context: 'Entered wrong password'
+				errors: ['Entered wrong password']
 			};
 		}
 	} catch (err) {
 		res.status(500).json({
 			message: 'LOG IN: Error while trying to log in user',
-			error: err
+			errors: [err.message]
 		});
 	}
 };

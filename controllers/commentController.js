@@ -7,9 +7,8 @@ const { checkValidationErrors, checkIdExists, checkDBOperationResult } = utils;
 exports.get_comments = async function (req, res, next) {
 	try {
 		const { postid } = req.params;
-
+		console.log({ postid });
 		checkIdExists(
-			req,
 			res,
 			postid,
 			'GET COMMENTS: Post id not found',
@@ -32,10 +31,11 @@ exports.get_comments = async function (req, res, next) {
 			});
 		}
 	} catch (err) {
+		console.log(err);
 		res.status(500).json({
 			message:
 				'GET COMMENTS: Error while trying to retrieve all comments for a post',
-			error: err
+			error: err.message
 		});
 	}
 };
@@ -53,31 +53,32 @@ exports.create_comment = [
 		.withMessage('User ref cannot be empty'),
 	async function (req, res, next) {
 		try {
+			console.log('GOing to create a comment');
 			const { content, user_ref } = req.body;
 			const { postid } = req.params;
-
+			console.log('1');
 			checkValidationErrors(
 				req,
 				res,
 				'CREATE COMMENT: Error with fields'
 			);
+			console.log('2');
 			checkIdExists(
-				req,
 				res,
 				user_ref,
 				'CREATE COMMENTS: User id not found',
 				'comment'
 			);
+			console.log('3');
 			checkIdExists(
-				req,
 				res,
 				postid,
 				'CREATE COMMENTS: Post id not found',
 				'comment'
 			);
-
+			console.log('4');
 			const postResult = await Post.findById(postid);
-
+			console.log(5);
 			if (postResult === null) {
 				res.status(401).json({
 					message: 'CREATE COMMENT: Post id not found',
@@ -89,7 +90,7 @@ exports.create_comment = [
 				timestamp: new Date(),
 				content,
 				user_ref,
-				postid
+				post_ref: postid
 			});
 
 			await newComment.save();
@@ -99,10 +100,11 @@ exports.create_comment = [
 				comment: newComment
 			});
 		} catch (err) {
+			console.log(err);
 			res.status(500).json({
 				message:
 					'CREATE COMMENT: Error while trying to create a comment',
-				error: err
+				error: err.message
 			});
 		}
 	}

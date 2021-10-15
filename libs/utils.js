@@ -55,7 +55,7 @@ function checkValidationErrors(req, res, message) {
 		});
 		res.status(200).json({
 			message,
-			context: validationErrors
+			errors: validationErrors
 		});
 	}
 }
@@ -77,7 +77,7 @@ async function checkUserExists(username) {
 	} catch (err) {
 		throw {
 			message: 'CHECK USER EXISTS: Error when checking for users exists',
-			context: err.message
+			error: err.message
 		};
 	}
 }
