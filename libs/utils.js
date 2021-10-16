@@ -53,16 +53,22 @@ function checkValidationErrors(req, res, message) {
 		const validationErrors = errors.array().map((e) => {
 			return e.msg;
 		});
-		res.status(200).json({
+		throw {
 			message,
 			errors: validationErrors
-		});
+		};
+		// res.status(200).json({
+		// 	message,
+		// 	errors: validationErrors
+		// });
 	}
 }
 
 async function checkValidPassword(foundUserPassword, inputPassword) {
 	const match = await bcrypt.compare(inputPassword, foundUserPassword);
-
+	console.log({ match });
+	console.log('what is check');
+	console.log(match ? true : false);
 	return match ? true : false;
 }
 

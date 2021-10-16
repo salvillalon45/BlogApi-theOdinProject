@@ -1,6 +1,6 @@
 const User = require('../models/user');
 const utils = require('../libs/utils');
-const { body, validationResult } = require('express-validator');
+const { body } = require('express-validator');
 const {
 	genPassword,
 	issueJWT,
@@ -28,10 +28,10 @@ exports.sign_up_post = [
 
 			if (await checkUserExists(username)) {
 				console.log('user exists');
-				res.status(401).json({
+				throw {
 					message: 'SIGN UP: Error when checking for users exists',
 					errors: ['User already exists']
-				});
+				};
 			}
 
 			const hashPassword = await genPassword(password);
@@ -50,7 +50,7 @@ exports.sign_up_post = [
 			console.log(err);
 			res.status(500).json({
 				message: 'SIGN UP: Error while trying to save new user in db',
-				errors: [err.message]
+				errors: err.errors
 			});
 		}
 	}
@@ -69,7 +69,7 @@ exports.log_in_post = async function (req, res, next) {
 			};
 		}
 
-		if (checkValidPassword(foundUser.password, password)) {
+		if (await checkValidPassword(foundUser.password, password)) {
 			const { token, expiresIn } = issueJWT(foundUser);
 
 			res.status(200).json({
@@ -84,9 +84,10 @@ exports.log_in_post = async function (req, res, next) {
 			};
 		}
 	} catch (err) {
+		console.log(err);
 		res.status(500).json({
 			message: 'LOG IN: Error while trying to log in user',
-			errors: [err.message]
+			errors: err.errors
 		});
 	}
 };

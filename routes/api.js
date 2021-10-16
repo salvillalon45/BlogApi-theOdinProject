@@ -19,12 +19,10 @@ router.get(
 
 // SIGNUP
 // ------------------------------------------------------------
-// router.get('/sign-up', auth_controller.sign_up_get);
 router.post('/sign-up', auth_controller.sign_up_post);
 
 // LOGIN/LOGOUT
 // ------------------------------------------------------------
-// router.get('/log-in', auth_controller.log_in_get);
 router.post('/log-in', auth_controller.log_in_post);
 router.get('/log-out', auth_controller.log_out_get);
 
@@ -38,7 +36,11 @@ router.put('/posts/:postid', post_controller.update_post);
 
 // COMMENTS
 // ------------------------------------------------------------
-router.get('/posts/:postid/comments', comment_controller.get_comments);
+router.get(
+	'/posts/:postid/comments',
+	passport.authenticate('jwt', { session: false }),
+	comment_controller.get_comments
+);
 router.post('/posts/:postid/comments', comment_controller.create_comment);
 router.delete(
 	'/posts/:postid/comments/:commentid',
