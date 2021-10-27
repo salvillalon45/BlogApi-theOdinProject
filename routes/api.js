@@ -24,15 +24,26 @@ router.post('/sign-up', auth_controller.sign_up_post);
 // LOGIN/LOGOUT
 // ------------------------------------------------------------
 router.post('/log-in', auth_controller.log_in_post);
-router.get('/log-out', auth_controller.log_out_get);
 
 // POSTS
 // ------------------------------------------------------------
 router.get('/posts', post_controller.get_posts);
 router.get('/posts/:postid', post_controller.post_detail);
-router.post('/posts', post_controller.create_post);
-router.delete('/posts/:postid', post_controller.delete_post);
-router.put('/posts/:postid', post_controller.update_post);
+router.post(
+	'/posts',
+	passport.authenticate('jwt', { session: false }),
+	post_controller.create_post
+);
+router.delete(
+	'/posts/:postid',
+	passport.authenticate('jwt', { session: false }),
+	post_controller.delete_post
+);
+router.put(
+	'/posts/:postid',
+	passport.authenticate('jwt', { session: false }),
+	post_controller.update_post
+);
 
 // COMMENTS
 // ------------------------------------------------------------
@@ -44,6 +55,7 @@ router.get(
 router.post('/posts/:postid/comments', comment_controller.create_comment);
 router.delete(
 	'/posts/:postid/comments/:commentid',
+	passport.authenticate('jwt', { session: false }),
 	comment_controller.delete_comment
 );
 router.put(

@@ -47,6 +47,7 @@ exports.sign_up_post = [
 				user: newUserResult
 			});
 		} catch (err) {
+			console.log('SIGN UP: Error while trying to save new user in db');
 			console.log(err);
 			res.status(500).json({
 				message: 'SIGN UP: Error while trying to save new user in db',
@@ -84,18 +85,11 @@ exports.log_in_post = async function (req, res, next) {
 			};
 		}
 	} catch (err) {
+		console.log('LOG IN: Error while trying to log in user');
 		console.log(err);
 		res.status(500).json({
 			message: 'LOG IN: Error while trying to log in user',
 			errors: err.errors
 		});
 	}
-};
-
-exports.log_out_get = function (req, res, next) {
-	console.log('Made it logout');
-	req.logout();
-	res.status(200).json({
-		message: 'LOG OUT'
-	});
 };

@@ -26,6 +26,8 @@ exports.get_posts = async function (req, res, next) {
 		// 	});
 		// }
 	} catch (err) {
+		console.log('GET POSTS: Error while trying to retrieve all posts');
+		console.log(err);
 		res.status(500).json({
 			message: 'GET POSTS: Error while trying to retrieve all posts',
 			error: err.message
@@ -66,7 +68,9 @@ exports.post_detail = async function (req, res, next) {
 		// 	});
 		// }
 	} catch (err) {
-		console.log('Erro here');
+		console.log(
+			'GET POST DETAIL: Error while trying to retrieve post by id'
+		);
 		console.log(err);
 		res.status(500).json({
 			message:
@@ -111,6 +115,8 @@ exports.create_post = [
 				comment: newPost
 			});
 		} catch (err) {
+			console.log('CREATE POST: Error while trying to create a post');
+			console.log(err);
 			res.status(500).json({
 				message: 'CREATE POST: Error while trying to create a post',
 				error: err.message
@@ -124,11 +130,10 @@ exports.delete_post = async function (req, res, next) {
 		const { postid } = req.params;
 
 		checkIdExists(
-			req,
 			res,
 			postid,
-			'DELETE POST: Post id not found',
-			'post'
+			'The Post you are trying to delete does not exist. Check the post id of this post.',
+			'postid'
 		);
 
 		const deletedPost = await Post.findByIdAndRemove(postid);
@@ -136,8 +141,8 @@ exports.delete_post = async function (req, res, next) {
 		checkDBOperationResult(
 			res,
 			deletedPost,
-			'DELETE POST: Post deleted successfully',
-			'DELETE POST: Post id not found',
+			'Post deleted successfully',
+			'Post id not found',
 			'post'
 		);
 		// if (deletedPost === null) {
@@ -152,9 +157,11 @@ exports.delete_post = async function (req, res, next) {
 		// 	});
 		// }
 	} catch (err) {
+		console.log('DELETE POST: Error while trying to delete a post');
+		console.log(err);
 		res.status(500).json({
 			message: 'DELETE POST: Error while trying to delete a post',
-			error: err.messsage
+			errors: err.errors
 		});
 	}
 };
@@ -183,7 +190,6 @@ exports.update_post = [
 			checkValidationErrors(req, res, 'UPDATE POST: Error with fields');
 
 			checkIdExists(
-				req,
 				res,
 				postid,
 				'UPDATE POST: Post id not found',
@@ -211,9 +217,11 @@ exports.update_post = [
 				'post'
 			);
 		} catch (err) {
+			console.log('UPDATE POST: Error while trying to update a post');
+			console.log(err);
 			res.status(500).json({
 				message: 'UPDATE POST: Error while trying to update a post',
-				error: err.message
+				errors: err.errors
 			});
 		}
 	}

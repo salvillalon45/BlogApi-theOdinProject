@@ -21,10 +21,14 @@ function checkDBOperationResult(
 	key
 ) {
 	if (dbResult === null || dbResult.length === 0) {
-		res.status(401).json({
+		throw {
 			message: errorMessage,
-			[key]: dbResult
-		});
+			errors: [errorMessage]
+		};
+		// res.status(401).json({
+		// 	message: errorMessage,
+		// 	[key]: dbResult
+		// });
 	} else {
 		res.status(200).json({
 			message: successMessage,
@@ -37,10 +41,10 @@ function checkIdExists(res, id, message, key) {
 	console.log('Inside checkIdexists');
 	if (isObjectIdValid(id) === false) {
 		console.log('wrong id');
-		res.status(200).json({
+		throw {
 			message,
-			[key]: null
-		});
+			errors: [message]
+		};
 	} else {
 		console.log('good id');
 	}

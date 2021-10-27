@@ -31,6 +31,9 @@ exports.get_comments = async function (req, res, next) {
 			});
 		}
 	} catch (err) {
+		console.log(
+			'GET COMMENTS: Error while trying to retrieve all comments for a post'
+		);
 		console.log(err);
 		res.status(500).json({
 			message:
@@ -100,6 +103,9 @@ exports.create_comment = [
 				comment: newComment
 			});
 		} catch (err) {
+			console.log(
+				'CREATE COMMENT: Error while trying to create a comment'
+			);
 			console.log(err);
 			res.status(500).json({
 				message:
@@ -114,31 +120,23 @@ exports.delete_comment = async function (req, res, next) {
 	try {
 		const { commentid } = req.params;
 
-		checkIdExists(
-			req,
-			res,
-			commentid,
-			'DELETE COMMENT: Comment id not found',
-			'comment'
-		);
+		checkIdExists(res, commentid, 'Comment id not found', 'comment');
 
 		const deletedComment = await Comment.findByIdAndRemove(commentid);
 
-		if (deletedComment === null) {
-			res.status(200).json({
-				message: 'DELETE COMMENT: Comment id not found',
-				comment: deletedComment
-			});
-		} else {
-			res.status(200).json({
-				message: 'DELETE COMMENT: Comment deleted successfully',
-				comment: deletedComment
-			});
-		}
+		checkDBOperationResult(
+			res,
+			deletedComment,
+			'Comment deleted successfully',
+			'Comment id not found',
+			'comment'
+		);
 	} catch (err) {
+		console.log('DELETE COMMENT: Error while trying to delete a comment');
+		console.log(err);
 		res.status(500).json({
 			message: 'DELETE COMMENT: Error while trying to delete a comment',
-			error: err
+			errors: err.errors
 		});
 	}
 };
@@ -209,6 +207,10 @@ exports.update_comment = [
 				'comment'
 			);
 		} catch (err) {
+			console.log(
+				'UPDATE COMMENT: Error while trying to update a comment'
+			);
+			console.log(err);
 			res.status(500).json({
 				message:
 					'UPDATE COMMENT: Error while trying to update a comment',
