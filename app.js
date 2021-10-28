@@ -36,6 +36,8 @@ app.use(favicon(path.join(__dirname, 'public', 'images', 'sal.png')));
 
 // Set up mongoose connection
 const mongoDB = process.env.DEV_MONGODB_URI || process.env.MONGODB_URI;
+console.log('What is mongoDB');
+console.log({ mongoDB });
 // const mongoDB = process.env.DEV_MONGODB_URI;
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
