@@ -28,6 +28,7 @@ exports.get_posts = async function (req, res, next) {
 	} catch (err) {
 		console.log('GET POSTS: Error while trying to retrieve all posts');
 		console.log(err);
+		console.log(err.message);
 		res.status(500).json({
 			message: 'GET POSTS: Error while trying to retrieve all posts',
 			error: err.message
