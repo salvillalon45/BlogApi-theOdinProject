@@ -7,7 +7,6 @@ const { checkValidationErrors, checkIdExists, checkDBOperationResult } = utils;
 exports.get_comments = async function (req, res, next) {
 	try {
 		const { postid } = req.params;
-		console.log({ postid });
 		checkIdExists(
 			res,
 			postid,
@@ -56,37 +55,33 @@ exports.create_comment = [
 		.withMessage('User ref cannot be empty'),
 	async function (req, res, next) {
 		try {
-			console.log('GOing to create a comment');
 			const { content, user_ref } = req.body;
 			const { postid } = req.params;
-			console.log('1');
+
 			checkValidationErrors(
 				req,
 				res,
 				'CREATE COMMENT: Error with fields'
 			);
-			console.log('2');
 			checkIdExists(
 				res,
 				user_ref,
 				'CREATE COMMENTS: User id not found',
 				'comment'
 			);
-			console.log('3');
 			checkIdExists(
 				res,
 				postid,
 				'CREATE COMMENTS: Post id not found',
 				'comment'
 			);
-			console.log('4');
+
 			const postResult = await Post.findById(postid);
-			console.log(5);
 			if (postResult === null) {
-				res.status(401).json({
+				throw {
 					message: 'CREATE COMMENT: Post id not found',
-					post: postResult
-				});
+					errors: ['Cannot create a comment without a valid post id']
+				};
 			}
 
 			const newComment = new Comment({
@@ -110,7 +105,7 @@ exports.create_comment = [
 			res.status(500).json({
 				message:
 					'CREATE COMMENT: Error while trying to create a comment',
-				error: err.message
+				errors: err.errors
 			});
 		}
 	}
@@ -156,7 +151,7 @@ exports.update_comment = [
 		try {
 			const { content, user_ref } = req.body;
 			const { postid, commentid } = req.params;
-			console.log({ postid, commentid });
+
 			checkValidationErrors(
 				req,
 				res,
@@ -186,12 +181,11 @@ exports.update_comment = [
 			});
 
 			const postResult = await Post.findById(postid);
-
 			if (postResult === null) {
-				res.status(401).json({
+				throw {
 					message: 'UPDATE COMMENT: Post id not found',
-					post: postResult
-				});
+					errors: ['Cannot update a comment without a valid post id']
+				};
 			}
 
 			const commentResult = await Comment.findByIdAndUpdate(
@@ -214,7 +208,7 @@ exports.update_comment = [
 			res.status(500).json({
 				message:
 					'UPDATE COMMENT: Error while trying to update a comment',
-				error: err.message
+				errors: err.errors
 			});
 		}
 	}

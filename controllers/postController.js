@@ -14,24 +14,12 @@ exports.get_posts = async function (req, res, next) {
 			'GET POSTS: No posts available for this post',
 			'posts'
 		);
-		// if (posts === null || posts.length === 0) {
-		// 	res.status(200).json({
-		// 		message: 'GET POSTS: No posts available for this post',
-		// 		posts
-		// 	});
-		// } else {
-		// 	res.status(200).json({
-		// 		message: 'GET POSTS: Posts retrieved successfully',
-		// 		posts
-		// 	});
-		// }
 	} catch (err) {
 		console.log('GET POSTS: Error while trying to retrieve all posts');
 		console.log(err);
-		console.log(err.message);
 		res.status(500).json({
 			message: 'GET POSTS: Error while trying to retrieve all posts',
-			error: err.message
+			errors: err.errors
 		});
 	}
 };
@@ -39,7 +27,6 @@ exports.get_posts = async function (req, res, next) {
 exports.post_detail = async function (req, res, next) {
 	try {
 		const { postid } = req.params;
-		console.log({ postid });
 		checkIdExists(
 			res,
 			postid,
@@ -48,8 +35,7 @@ exports.post_detail = async function (req, res, next) {
 		);
 
 		const post = await Post.findById(postid).populate('author');
-		console.log('What is post');
-		console.log(post);
+
 		checkDBOperationResult(
 			res,
 			post,
@@ -57,17 +43,6 @@ exports.post_detail = async function (req, res, next) {
 			'GET POST DETAIL: No posts available for this id',
 			'post'
 		);
-		// if (post === null) {
-		// 	res.status(200).json({
-		// 		message: 'GET POST DETAIL: No posts available for this id',
-		// 		post
-		// 	});
-		// } else {
-		// 	res.status(200).json({
-		// 		message: 'GET POST DETAIL: Post retrieved successfully',
-		// 		post
-		// 	});
-		// }
 	} catch (err) {
 		console.log(
 			'GET POST DETAIL: Error while trying to retrieve post by id'
@@ -76,7 +51,7 @@ exports.post_detail = async function (req, res, next) {
 		res.status(500).json({
 			message:
 				'GET POST DETAIL: Error while trying to retrieve post by id',
-			error: err.message
+			errors: err.errors
 		});
 	}
 };
@@ -120,7 +95,7 @@ exports.create_post = [
 			console.log(err);
 			res.status(500).json({
 				message: 'CREATE POST: Error while trying to create a post',
-				error: err.message
+				errors: err.errors
 			});
 		}
 	}
@@ -146,17 +121,6 @@ exports.delete_post = async function (req, res, next) {
 			'Post id not found',
 			'post'
 		);
-		// if (deletedPost === null) {
-		// 	res.status(200).json({
-		// 		message: 'DELETE POST: Post id not found',
-		// 		post: deletedPost
-		// 	});
-		// } else {
-		// 	res.status(200).json({
-		// 		message: '',
-		// 		post: deletedPost
-		// 	});
-		// }
 	} catch (err) {
 		console.log('DELETE POST: Error while trying to delete a post');
 		console.log(err);

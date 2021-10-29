@@ -6,6 +6,8 @@ const ObjectId = require('mongoose').Types.ObjectId;
 require('dotenv').config();
 
 function isObjectIdValid(id) {
+	// Checks if a string is valid id used in mongoose. Tjhe post below helped me
+	// https://stackoverflow.com/questions/13850819/can-i-determine-if-a-string-is-a-mongodb-objectid
 	return ObjectId.isValid(id)
 		? String(new ObjectId(id) === id)
 			? true
@@ -25,10 +27,6 @@ function checkDBOperationResult(
 			message: errorMessage,
 			errors: [errorMessage]
 		};
-		// res.status(401).json({
-		// 	message: errorMessage,
-		// 	[key]: dbResult
-		// });
 	} else {
 		res.status(200).json({
 			message: successMessage,
@@ -38,7 +36,6 @@ function checkDBOperationResult(
 }
 
 function checkIdExists(res, id, message, key) {
-	console.log('Inside checkIdexists');
 	if (isObjectIdValid(id) === false) {
 		console.log('wrong id');
 		throw {
@@ -61,18 +58,11 @@ function checkValidationErrors(req, res, message) {
 			message,
 			errors: validationErrors
 		};
-		// res.status(200).json({
-		// 	message,
-		// 	errors: validationErrors
-		// });
 	}
 }
 
 async function checkValidPassword(foundUserPassword, inputPassword) {
 	const match = await bcrypt.compare(inputPassword, foundUserPassword);
-	console.log({ match });
-	console.log('what is check');
-	console.log(match ? true : false);
 	return match ? true : false;
 }
 
@@ -87,7 +77,7 @@ async function checkUserExists(username) {
 	} catch (err) {
 		throw {
 			message: 'CHECK USER EXISTS: Error when checking for users exists',
-			error: err.message
+			errors: [err.message]
 		};
 	}
 }
@@ -101,7 +91,7 @@ async function genPassword(userPassword) {
 	} catch (err) {
 		throw {
 			message: 'GEN PASSWORD: Error when trying to hash password',
-			context: err.message
+			errors: [err.message]
 		};
 	}
 }
