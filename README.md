@@ -1,16 +1,5 @@
-<h1 align="center">
+# Blog API
 [The Odin Project: Node] - Project: Blog API 
-</h1>
-
-<p align="center">
-Made By
-</p>
-
-<p align="center">
-  <a href="#">
-    <img alt="Sal Logo" src="./public/images/sal.png" width="500" />
-  </a>
-</p>
 
 ## Intro
 
